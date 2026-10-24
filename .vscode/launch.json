@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run JobTrail.App",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/JobTrail.App/bin/Debug/net10.0/JobTrail.App.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/JobTrail.App",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    }
+  ]
+}
