@@ -1,22 +1,108 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:JobTrail.App.ViewModels"
+        xmlns:m="using:JobTrail.App.Models"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
         x:Class="JobTrail.App.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="JobTrail.App">
+        Title="JobTrail"
+        Width="1000" Height="600"
+        MinWidth="700" MinHeight="400">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <TextBox Text="{Binding Greeting}"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center" />
+    <DockPanel>
+
+        <!-- Header -->
+        <Border DockPanel.Dock="Top"
+                Padding="20,14"
+                Background="{DynamicResource SystemControlBackgroundAltMediumLowBrush}">
+            <StackPanel Spacing="2">
+                <TextBlock Text="JobTrail" FontSize="22" FontWeight="SemiBold" />
+                <TextBlock
+                    Text="{Binding Applications.Count, StringFormat='{}{0} applications'}"
+                    Opacity="0.7"
+                />
+            </StackPanel>
+        </Border>
+
+        <!-- Body: list | splitter | details -->
+        <Grid ColumnDefinitions="320,4,*">
+
+            <ListBox
+                Grid.Column="0"
+                ItemsSource="{Binding Applications}"
+                SelectedItem="{Binding SelectedApplication}"
+            >
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="m:JobApplication">
+                        <StackPanel Margin="4,6" Spacing="2">
+                            <TextBlock Text="{Binding Company}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Role}" />
+                            <StackPanel Orientation="Horizontal" Spacing="8" Opacity="0.7">
+                                <TextBlock Text="{Binding Status}" />
+                                <TextBlock Text="•" />
+                                <TextBlock Text="{Binding AppliedOn, StringFormat='{}{0:d MMM yyyy}'}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
+
+            <!-- Details -->
+            <Panel Grid.Column="2">
+                <ScrollViewer IsVisible="{Binding SelectedApplication, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <StackPanel Margin="24" Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock
+                                Text="{Binding SelectedApplication.Role}"
+                                FontSize="20" FontWeight="SemiBold"
+                                TextWrapping="Wrap"
+                            />
+                            <TextBlock Text="{Binding SelectedApplication.Company}" FontSize="16" Opacity="0.8" />
+                        </StackPanel>
+
+                        <Grid
+                            ColumnDefinitions="Auto,*"
+                            RowDefinitions="Auto,Auto,Auto"
+                            ColumnSpacing="16" RowSpacing="8"
+                        >
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Status" Opacity="0.6" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedApplication.Status}" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Applied" Opacity="0.6" />
+                            <TextBlock
+                                Grid.Row="1" Grid.Column="1"
+                                Text="{Binding SelectedApplication.AppliedOn, StringFormat='{}{0:d MMMM yyyy}'}"
+                            />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Location" Opacity="0.6" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedApplication.Location}" />
+                        </Grid>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Notes" Opacity="0.6" />
+                            <TextBlock Text="{Binding SelectedApplication.Notes}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <TextBlock
+                    Text="Select an application to see its details."
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Opacity="0.6"
+                    IsVisible="{Binding SelectedApplication, Converter={x:Static ObjectConverters.IsNull}}"
+                />
+            </Panel>
+
+        </Grid>
+    </DockPanel>
 
 </Window>
